@@ -22,7 +22,11 @@ logger = logging.getLogger("run_tests")
 def check_dependencies():
     """Check if all required packages for testing are installed."""
     required_packages = [
-        "pytest", "pytest-mock", "pytest-cov", "pytest-dash"
+        "pytest",
+        "pytest-mock",
+        "pytest-cov",
+        "dash",
+        "dash-bootstrap-components",
     ]
     
     missing_packages = []
@@ -50,7 +54,7 @@ def check_dependencies():
 def run_tests():
     """Run the Neural Child test suite."""
     logger.info("Running Neural Child tests...")
-    
+
     # Get the project root directory
     project_root = os.path.dirname(os.path.abspath(__file__))
     
@@ -58,12 +62,16 @@ def run_tests():
     os.chdir(project_root)
     
     # Run pytest with coverage
+    env = os.environ.copy()
+    env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    env["PYTEST_PLUGINS"] = "pytest_cov.plugin,pytest_mock"
+
     try:
         subprocess.run([
             sys.executable, "-m", "pytest",
             "--cov=mind", "--cov=mother", "--cov=core", "--cov=communication",
             "-v"
-        ], check=True)
+        ], check=True, env=env)
     except subprocess.CalledProcessError as e:
         logger.error(f"Tests failed with error: {e}")
         sys.exit(1)

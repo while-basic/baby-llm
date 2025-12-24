@@ -4,6 +4,9 @@ site_author: Neural Child Team
 repo_url: https://github.com/yourusername/neural-child
 repo_name: neural-child
 
+# Set docs_dir to current directory since markdown files are in the same directory as this config
+docs_dir: .
+
 theme:
   name: material
   features:

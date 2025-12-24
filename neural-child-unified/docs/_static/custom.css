@@ -1,0 +1,49 @@
+/*----------------------------------------------------------------------------
+File:       docs/_static/custom.css
+Project:    Baby LLM - Unified Neural Child Development System
+Created by: Celaya Solutions, 2025
+Author:     Christopher Celaya <chris@chriscelaya.com>
+Description: Custom CSS for documentation
+Version:    1.0.0
+License:    MIT
+Last Update: January 2025
+----------------------------------------------------------------------------*/
+
+/* Custom styles for Read the Docs theme */
+
+/* Footer attribution */
+.footer {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+/* Code blocks */
+.highlight {
+    border-radius: 4px;
+}
+
+/* Admonitions */
+.admonition {
+    border-radius: 4px;
+}
+
+/* Tables */
+table.docutils {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.docutils th,
+table.docutils td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+table.docutils th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}

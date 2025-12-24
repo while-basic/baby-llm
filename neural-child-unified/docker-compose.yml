@@ -1,0 +1,71 @@
+#----------------------------------------------------------------------------
+#File:       docker-compose.yml
+#Project:    Baby LLM - Unified Neural Child Development System
+#Created by: Celaya Solutions, 2025
+#Author:     Christopher Celaya <chris@chriscelaya.com>
+#Description: Docker Compose configuration for neural child system
+#Version:    1.0.0
+#License:    MIT
+#Last Update: January 2025
+#----------------------------------------------------------------------------
+
+services:
+  neural-child:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: neural-child-unified
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./checkpoints:/app/checkpoints
+      - ./memories:/app/memories
+      - ./development_results:/app/development_results
+      - ./config:/app/config
+    environment:
+      - FLASK_ENV=production
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-change-me-in-production}
+      - OLLAMA_HOST=http://ollama:11434
+      - PYTHONUNBUFFERED=1
+    command: ["python", "-m", "neural_child", "--web", "--host", "0.0.0.0", "--port", "5000"]
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    networks:
+      - neural-child-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: neural-child-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_NUM_GPU=1
+    restart: unless-stopped
+    networks:
+      - neural-child-network
+    # Uncomment if you have NVIDIA GPU
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+networks:
+  neural-child-network:
+    driver: bridge
+
+volumes:
+  ollama_data:
+    driver: local

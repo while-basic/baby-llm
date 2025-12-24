@@ -153,6 +153,25 @@ python -m neural_child --test
 python -m neural_child --smoke
 ```
 
+**Run in autonomous mode:**
+```bash
+python -m neural_child --auto
+```
+
+**Deploy with Docker:**
+```bash
+# Linux/Mac
+./deploy.sh
+
+# Windows (PowerShell)
+.\deploy.ps1
+
+# Or manually
+docker-compose up -d
+```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment guide.
+
 ## 📖 Usage
 
 ### Command-Line Interface
@@ -321,6 +340,7 @@ python -m neural_child --smoke
 **Essential Guides**:
 - **`GETTING_STARTED.md`** - Quick 5-minute setup guide
 - **`INSTALL.md`** - Detailed installation instructions
+- **`DEPLOYMENT.md`** - Complete deployment guide (Docker, cloud, production)
 - **`TROUBLESHOOTING.md`** - Common issues and solutions
 - **`README.md`** - Complete project documentation (this file)
 

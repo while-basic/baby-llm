@@ -27,6 +27,7 @@ wheels/
 .vscode/
 *.swp
 *.swo
+.cursorrules
 
 # Project specific
 *.pth

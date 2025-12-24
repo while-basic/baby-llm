@@ -1,0 +1,13 @@
+#----------------------------------------------------------------------------
+#File:       __init__.py
+#Project:    Baby LLM - Unified Neural Child Development System
+#Created by: Celaya Solutions, 2025
+#Author:     Christopher Celaya <chris@chriscelaya.com>
+#Description: Package initializer for tests
+#Version:    1.0.0
+#License:    MIT
+#Last Update: January 2025
+#----------------------------------------------------------------------------
+
+"""Package initializer for tests."""
+

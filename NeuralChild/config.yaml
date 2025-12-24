@@ -1,47 +1,18 @@
 # NeuralChild Configuration
-# Configuration for the NeuralChild brain simulation framework
-
-# Server Configuration
 server:
   llm_server_url: "http://localhost:1234/v1/chat/completions"
   embedding_server_url: "http://localhost:1234/v1/embeddings"
-  obsidian_api_url: null
 
-# Model Configuration
 model:
-  llm_model: "gpt-3.5-turbo"  # or local model name
+  llm_model: "gpt-3.5-turbo"
   embedding_model: "all-MiniLM-L6-v2"
   temperature: 0.7
-  max_tokens: -1  # -1 for unlimited
+  max_tokens: -1
 
-# Visualization Configuration
-visualization:
-  enabled: true
-  update_interval: 1.0  # seconds
-  obsidian_integration: false
-  graph_enabled: true
-  colors:
-    background: "#f0f0f0"
-    text: "#333333"
-    highlight: "#3498db"
-    secondary: "#e74c3c"
-    tertiary: "#2ecc71"
-  network_display:
-    consciousness: true
-    emotions: true
-    perception: true
-    thoughts: true
-
-# Mind Configuration
 mind:
   learning_rate: 0.001
-  step_interval: 0.1  # seconds
-  need_update_interval: 5.0  # seconds
-  memory_consolidation_interval: 30.0  # seconds
-  development_check_interval: 60.0  # seconds
-  network_growth_check_interval: 120.0  # seconds
-
-  # Network dimensions
+  step_interval: 0.1
+  starting_stage: "INFANT"
   networks:
     consciousness:
       input_dim: 64
@@ -60,30 +31,6 @@ mind:
       hidden_dim: 128
       output_dim: 64
 
-  # Developmental settings
-  development_acceleration: 1.0  # 1.0 = normal speed, >1.0 = faster
-  starting_stage: "INFANT"
-
-  # Feature flags
-  features_enabled:
-    memory_consolidation: true
-    emotional_development: true
-    belief_formation: true
-    need_simulation: true
-
-# Logging Configuration
 logging:
-  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
-  file_logging: true
-  log_file: "neuralchild.log"
+  level: "INFO"
   console_logging: true
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-# Development Configuration
-development:
-  debug_mode: false
-  simulate_llm: false  # Use simulated responses instead of real API
-  profile_performance: false
-  crash_on_error: false
-  record_metrics: true
-  experimental_features: {}

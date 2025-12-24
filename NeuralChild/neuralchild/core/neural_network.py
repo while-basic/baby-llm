@@ -151,6 +151,14 @@ class NeuralNetwork(nn.Module, ABC):
         self.name = name
         self.input_dim = input_dim
         self.output_dim = output_dim
+        
+        # Detect and set device (GPU if available, else CPU)
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            logger.info(f"Network {name} using GPU: {torch.cuda.get_device_name(0)}")
+        else:
+            logger.info(f"Network {name} using CPU")
+        
         self.state = NetworkState(
             name=name,
             developmental_weights={
@@ -177,6 +185,9 @@ class NeuralNetwork(nn.Module, ABC):
         self.min_layer_utilization = 0.3  # Utilization threshold for growth
         self.growth_threshold = 0.7  # Activity threshold to trigger growth
         self.pruning_threshold = 0.1  # Activity threshold for pruning
+        
+        # Move network to device
+        self.to(self.device)
 
     @abstractmethod
     def forward(self, x: torch.Tensor) -> torch.Tensor:

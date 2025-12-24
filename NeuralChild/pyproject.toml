@@ -71,7 +71,7 @@ Changelog = "https://github.com/celayasolutions/neuralchild/blob/main/CHANGELOG.
 neuralchild = "neuralchild.cli:main"
 
 [tool.setuptools]
-packages = ["neuralchild", "neuralchild.core", "neuralchild.mind", "neuralchild.mind.networks", "neuralchild.mother", "neuralchild.communication", "neuralchild.visualization", "neuralchild.utils"]
+packages = ["neuralchild", "neuralchild.core", "neuralchild.mind", "neuralchild.mind.networks", "neuralchild.mother", "neuralchild.communication", "neuralchild.utils"]
 
 [tool.setuptools.package-data]
 neuralchild = ["py.typed", "config/*.yaml"]

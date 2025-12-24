@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Neural Child Development System{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Neural Child Dashboard
+        {% if watch_mode %}
+        <span class="watch-mode-indicator">● LIVE MONITORING</span>
+        {% endif %}
+    </h2>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" class="alert-container"></div>
+    
+    <!-- Progress Tracking Section -->
+    {% if watch_mode %}
+    <div class="progress-section">
+        <h3>Developmental Progress</h3>
+        <div id="progress-info">
+            <p><strong>Current Stage:</strong> <span id="current-stage-display">Loading...</span></p>
+            <p><strong>Next Stage:</strong> <span id="next-stage-display">Loading...</span></p>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar" style="width: 0%">0%</div>
+            </div>
+            <div class="progress-metrics" id="progress-metrics">
+                <!-- Metrics will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="status-grid">
+        <div class="status-card">
+            <h3>Current State</h3>
+            <div id="current-state">
+                <p>Loading...</p>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h3>Emotional State</h3>
+            <div id="emotional-state">
+                <p>Loading...</p>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h3>Development</h3>
+            <div id="development-info">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="chat-section">
+        <h3>Chat with Neural Child</h3>
+        <div id="chat-messages"></div>
+        <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</div>
+
+<!-- Auto-refresh indicator -->
+{% if watch_mode %}
+<div class="auto-refresh-indicator">
+    <div class="refresh-spinner"></div>
+    <span>Auto-refreshing every <span id="refresh-interval">3</span>s</span>
+</div>
+{% endif %}
+
+<script>
+    const WATCH_MODE = {{ 'true' if watch_mode else 'false' }};
+    const REFRESH_INTERVAL = 3000; // 3 seconds
+    let lastStage = null;
+    let lastCheckTime = new Date().toISOString();
+    let refreshTimer = null;
+
+    // Alert system
+    function showAlert(type, title, message, duration = 5000) {
+        const container = document.getElementById('alert-container');
+        const alert = document.createElement('div');
+        alert.className = `alert ${type}`;
+        
+        const icons = {
+            'success': '✓',
+            'warning': '⚠',
+            'info': 'ℹ'
+        };
+        
+        alert.innerHTML = `
+            <div class="alert-icon">${icons[type] || 'ℹ'}</div>
+            <div class="alert-content">
+                <div class="alert-title">${title}</div>
+                <div class="alert-message">${message}</div>
+            </div>
+            <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+        `;
+        
+        container.appendChild(alert);
+        
+        if (duration > 0) {
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, duration);
+        }
+    }
+
+    // Update progress visualization
+    async function updateProgress() {
+        try {
+            const response = await fetch('/api/progress');
+            const data = await response.json();
+            
+            document.getElementById('current-stage-display').textContent = data.current_stage || 'Unknown';
+            document.getElementById('next-stage-display').textContent = data.next_stage || 'N/A';
+            
+            const progressPercent = Math.round(data.progress_to_next * 100);
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = progressPercent + '%';
+            progressBar.textContent = progressPercent + '%';
+            
+            // Update metrics
+            const metricsContainer = document.getElementById('progress-metrics');
+            if (metricsContainer && data.metrics) {
+                metricsContainer.innerHTML = Object.entries(data.metrics).map(([key, value]) => `
+                    <div class="metric-item">
+                        <div class="metric-label">${key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+                        <div class="metric-value">${Math.round(value * 100)}%</div>
+                    </div>
+                `).join('');
+            }
+        } catch (error) {
+            console.error('Failed to update progress:', error);
+        }
+    }
+
+    // Check for stage changes
+    async function checkStageChanges() {
+        try {
+            const response = await fetch(`/api/stage-changes?since=${encodeURIComponent(lastCheckTime)}`);
+            const data = await response.json();
+            
+            if (data.changes && data.changes.length > 0) {
+                data.changes.forEach(change => {
+                    showAlert('success', 'Stage Progression!', 
+                        `Advanced from ${change.from_stage} to ${change.to_stage}`, 10000);
+                });
+            }
+            
+            lastCheckTime = new Date().toISOString();
+        } catch (error) {
+            console.error('Failed to check stage changes:', error);
+        }
+    }
+
+    // Update state display
+    async function updateState() {
+        try {
+            const response = await fetch('/api/state');
+            const data = await response.json();
+            
+            // Update current state
+            document.getElementById('current-state').innerHTML = 
+                `<p><strong>Stage:</strong> ${data.current_stage}</p>
+                 <p><strong>Age:</strong> ${data.age_months.toFixed(1)} months</p>
+                 <p><strong>Last Update:</strong> ${new Date(data.last_update).toLocaleTimeString()}</p>`;
+            
+            // Check for stage change
+            if (lastStage && lastStage !== data.current_stage) {
+                showAlert('success', 'Stage Changed!', 
+                    `Progressed from ${lastStage} to ${data.current_stage}`, 10000);
+            }
+            lastStage = data.current_stage;
+            
+            // Update emotional state
+            const emotions = data.emotional_state;
+            document.getElementById('emotional-state').innerHTML = 
+                `<p><strong>Happiness:</strong> ${(emotions.happiness * 100).toFixed(0)}%</p>
+                 <p><strong>Trust:</strong> ${(emotions.trust * 100).toFixed(0)}%</p>
+                 <p><strong>Fear:</strong> ${(emotions.fear * 100).toFixed(0)}%</p>
+                 <p><strong>Surprise:</strong> ${(emotions.surprise * 100).toFixed(0)}%</p>`;
+            
+            // Update development info
+            document.getElementById('development-info').innerHTML = 
+                `<p><strong>Speed:</strong> ${data.development_speed}x</p>
+                 <p><strong>Status:</strong> ${data.warnings.warning_state}</p>`;
+            
+            // Update progress if in watch mode
+            if (WATCH_MODE) {
+                await updateProgress();
+                await checkStageChanges();
+            }
+        } catch (error) {
+            console.error('Failed to update state:', error);
+        }
+    }
+
+    // Auto-refresh in watch mode
+    if (WATCH_MODE) {
+        // Initial load
+        updateState();
+        
+        // Set up auto-refresh
+        refreshTimer = setInterval(() => {
+            updateState();
+        }, REFRESH_INTERVAL);
+        
+        // Show initial alert
+        showAlert('info', 'Watch Mode Active', 
+            'Dashboard will automatically refresh every ' + (REFRESH_INTERVAL / 1000) + ' seconds', 5000);
+    } else {
+        // Single load for non-watch mode
+        updateState();
+    }
+
+    // Chat form handler
+    document.getElementById('chat-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = document.getElementById('chat-input');
+        const message = input.value;
+        
+        if (!message) return;
+        
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: message})
+        })
+        .then(response => response.json())
+        .then(data => {
+            const messagesDiv = document.getElementById('chat-messages');
+            messagesDiv.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+            messagesDiv.innerHTML += `<p><strong>Child:</strong> ${data.response}</p>`;
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (refreshTimer) {
+            clearInterval(refreshTimer);
+        }
+    });
+</script>
+{% endblock %}

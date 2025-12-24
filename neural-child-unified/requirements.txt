@@ -1,0 +1,45 @@
+#----------------------------------------------------------------------------
+#File:       requirements.txt
+#Project:    Baby LLM - Unified Neural Child Development System
+#Created by: Celaya Solutions, 2025
+#Author:     Christopher Celaya <chris@chriscelaya.com>
+#Description: Unified dependencies merged from all projects
+#Version:    1.0.0
+#License:    MIT
+#Last Update: January 2025
+#----------------------------------------------------------------------------
+
+# Core Dependencies
+torch>=2.0.0
+pydantic>=2.0.0
+pyyaml>=6.0
+numpy>=1.20.0,<2.0.0
+python-dotenv>=1.0.0
+
+# Web Framework (Flask only - no Dash/Gradio/Streamlit)
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# LLM Integration (Ollama)
+ollama>=0.1.0
+requests>=2.25.0
+
+# Memory & Storage
+chromadb>=0.4.0
+
+# Utilities
+networkx>=2.8.0
+scikit-learn>=1.0.0
+
+# Optional: Visualization (for data generation, not UI)
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Development Dependencies (optional)
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+# black>=23.0.0
+# isort>=5.12.0
+# mypy>=1.4.0
+# ruff>=0.1.0
+
